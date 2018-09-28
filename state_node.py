@@ -1,4 +1,5 @@
 import math
+import copy
 
 
 class StateNode:
@@ -6,17 +7,18 @@ class StateNode:
         if previous is None:
             self.board = [[0] * 6, [0] * 6, [0] * 6, [0] * 6, [0] * 6, [0] * 6]
         else:
-            self.board = previous.board.copy()
+            self.board = copy.deepcopy(previous.board)
         self.board[move[0]][move[1]] = player_turn
         self.move = move
         self.actions = [[None] * 6, [None] * 6, [None] * 6, [None] * 6, [None] * 6, [None] * 6]
         self.h1 = None
         self.h2 = None
+        self.middleDistance = None
         
     def calc_h(self, player):
-        if player is 1 and self.h1 is not None:
+        if player == 1 and self.h1 is not None:
             return self.h1
-        if player is 2 and self.h2 is not None:
+        if player == 2 and self.h2 is not None:
             return self.h2
         p1_sets = self.find_player_sets(1)
         p2_sets = self.find_player_sets(2)
@@ -29,10 +31,25 @@ class StateNode:
         else:
             self.h1 = 5 * p1_sets[0] - 10 * p2_sets[0] + 3 * p1_sets[1] - 6 * p2_sets[1] + p1_sets[2] - p2_sets[2]
             self.h2 = 5 * p2_sets[0] - 10 * p1_sets[0] + 3 * p2_sets[1] - 6 * p1_sets[1] + p2_sets[2] - p1_sets[2]
-        if player is 1:
+        if player == 1:
             return self.h1
         else:
             return self.h2
+
+    def get_valid_moves(self, player):
+        moves = []
+        for y in range(0,6):
+            for x in range(0,6):
+                if self.board[x][y] == 0:
+                    new_state = StateNode(self, (x,y), player)
+                    moves.append(new_state)
+        return moves
+
+    def calc_middle_distance(self):
+        if self.middleDistance is not None:
+            return self.middleDistance
+        self.middleDistance = abs(2.5 - self.move[0]) + abs(2.5 - self.move[1])
+        return self.middleDistance
             
 
     def find_player_sets(self, player):

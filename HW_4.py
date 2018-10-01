@@ -1,5 +1,6 @@
 import sys
 import math
+import time
 from state_node import StateNode
 
 
@@ -53,7 +54,7 @@ def player1_turn(current_state):
 
 
 def player2_turn(current_state):
-    value = minimax(current_state, 0, 4, True, 2, 2)
+    value = minimax(current_state, 0, 3, True, 2, 2)
     chosen_action = None
     for y in range(0, 6):
         for x in range(0, 6):
@@ -72,16 +73,20 @@ def main():
     print(current_state.board, current_state.calc_h(1), current_state.calc_h(2))
     while True:
         print('Player 2 taking turn...')
+        start = time.time()
         current_state = player2_turn(current_state)
+        end = time.time()
         print(current_state.board, current_state.calc_h(
-            1), current_state.calc_h(2))
+            1), current_state.calc_h(2), end-start)
         if abs(current_state.calc_h(1)) == 1000000:
             sys.exit()
 
         print('Player 1 taking turn...')
+        start = time.time()
         current_state = player1_turn(current_state)
+        end = time.time()
         print(current_state.board, current_state.calc_h(
-            1), current_state.calc_h(2))
+            1), current_state.calc_h(2), end-start)
         if abs(current_state.calc_h(1)) == 1000000:
             sys.exit()
 

@@ -1,13 +1,17 @@
 import math
 import copy
+import random
 
 
 class StateNode:
-    def __init__(self, previous=None, move=(2, 2), player_turn=1):
+    def __init__(self, previous=None, move=None, player_turn=1):
         if previous is None:
             self.board = [[0] * 6, [0] * 6, [0] * 6, [0] * 6, [0] * 6, [0] * 6]
         else:
             self.board = copy.deepcopy(previous.board)
+        if move is None:
+            possible_starts = [(2, 2), (2, 3), (3, 2), (3, 3)]
+            move = random.choice(possible_starts)
         self.board[move[0]][move[1]] = player_turn
         self.move = move
         self.actions = [[None] * 6, [None] * 6, [None] * 6, [None] * 6, [None] * 6, [None] * 6]
@@ -23,11 +27,11 @@ class StateNode:
         p1_sets = self.find_player_sets(1)
         p2_sets = self.find_player_sets(2)
         if p1_sets == []:
-            self.h1 = 1000000
-            self.h2 = -1000000
+            self.h1 = 10000
+            self.h2 = -10000
         elif p2_sets == []:
-            self.h1 = -1000000
-            self.h2 = 1000000
+            self.h1 = -10000
+            self.h2 = 10000
         else:
             self.h1 = 5 * p1_sets[0] - 10 * p2_sets[0] + 3 * p1_sets[1] - 6 * p2_sets[1] + p1_sets[2] - p2_sets[2]
             self.h2 = 5 * p2_sets[0] - 10 * p1_sets[0] + 3 * p2_sets[1] - 6 * p1_sets[1] + p2_sets[2] - p1_sets[2]
@@ -48,7 +52,7 @@ class StateNode:
     def calc_middle_distance(self):
         if self.middleDistance is not None:
             return self.middleDistance
-        self.middleDistance = abs(2.5 - self.move[0]) + abs(2.5 - self.move[1])
+        self.middleDistance = math.sqrt((2.5 - self.move[0])**2 + (2.5 - self.move[1])**2)
         return self.middleDistance
             
 

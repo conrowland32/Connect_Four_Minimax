@@ -7,7 +7,7 @@ from state_node import StateNode
 nodes_expanded = 0
 
 
-def minimax(current_node, current_depth, max_depth, max_step, player_turn, searching_player):
+def minimax(current_node, current_depth, max_depth, max_step, player_turn, searching_player, alpha, beta):
     global nodes_expanded
     if current_depth == max_depth or abs(current_node.calc_h(searching_player)) == 10000:
         return current_node.calc_h(searching_player)
@@ -17,13 +17,17 @@ def minimax(current_node, current_depth, max_depth, max_step, player_turn, searc
         nodes_expanded += len(moves)
         for next_move in moves:
             if player_turn == 1:
-                min_node_val = minimax(next_move, current_depth+1,
-                                       max_depth, False, 2, searching_player)
+                min_node_val = minimax(
+                    next_move, current_depth+1, max_depth, False, 2, searching_player, alpha, beta)
             else:
-                min_node_val = minimax(next_move, current_depth+1,
-                                       max_depth, False, 1, searching_player)
+                min_node_val = minimax(
+                    next_move, current_depth+1, max_depth, False, 1, searching_player, alpha, beta)
             if min_node_val > current_max_val:
                 current_max_val = min_node_val
+            if current_max_val > alpha:
+                alpha = current_max_val
+            if beta < alpha:
+                break
             if current_depth == 0:
                 current_node.actions[next_move.move[0]
                                      ][next_move.move[1]] = min_node_val
@@ -34,18 +38,22 @@ def minimax(current_node, current_depth, max_depth, max_step, player_turn, searc
         nodes_expanded += len(moves)
         for next_move in moves:
             if player_turn == 1:
-                max_node_val = minimax(next_move, current_depth+1,
-                                       max_depth, True, 2, searching_player)
+                max_node_val = minimax(
+                    next_move, current_depth+1, max_depth, True, 2, searching_player, alpha, beta)
             else:
-                max_node_val = minimax(next_move, current_depth+1,
-                                       max_depth, True, 1, searching_player)
+                max_node_val = minimax(
+                    next_move, current_depth+1, max_depth, True, 1, searching_player, alpha, beta)
             if max_node_val < current_min_val:
                 current_min_val = max_node_val
+            if current_min_val < beta:
+                beta = current_min_val
+            if beta < alpha:
+                break
         return current_min_val
 
 
 def player1_turn(current_state):
-    value = minimax(current_state, 0, 2, True, 1, 1)
+    value = minimax(current_state, 0, 2, True, 1, 1, -1000000, 1000000)
     chosen_action = None
     same_distances = []
     for y in range(0, 6):
@@ -67,7 +75,7 @@ def player1_turn(current_state):
 
 
 def player2_turn(current_state):
-    value = minimax(current_state, 0, 4, True, 2, 2)
+    value = minimax(current_state, 0, 4, True, 2, 2, -1000000, 1000000)
     chosen_action = None
     same_distances = []
     for y in range(0, 6):
@@ -154,7 +162,7 @@ def main():
                 game_over = True
                 player1_wins += 1
                 print('Player 1 wins!')
-                game_output.write('Player 2 wins!\n')
+                game_output.write('Player 1 wins!\n')
                 metadata.write('Player 1 wins game ' + str(game+1) + '! Total wins: ' + str(player1_wins) + ' : ' + str(player2_wins) + '  (' + str(
                     num_draws) + ' draws) Game time: ' + str(game_end-game_start) + '\n')
                 break

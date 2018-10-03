@@ -196,7 +196,7 @@ class StateNode:
                             and [(x,y), (x+1,y+1)] not in counted_sets:
                         count[2] += 1
                         counted_sets.append([(x,y), (x+1,y+1)])
-                elif x > 1 and y < 4:
+                if x > 1 and y < 4:
                     if [self.board[x][y], self.board[x-1][y+1], self.board[x-2][y+2]] == [0, player, player] \
                             and [(x-1,y+1), (x-2,y+2)] not in counted_sets:
                         count[2] += 1

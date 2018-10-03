@@ -56,6 +56,7 @@ def player1_turn(current_state):
     value = minimax(current_state, 0, 2, True, 1, 1, -1000000, 1000000)
     chosen_action = None
     same_distances = []
+    print(current_state.actions)
     for y in range(0, 6):
         for x in range(0, 6):
             if current_state.actions[x][y] is None:
@@ -78,6 +79,7 @@ def player2_turn(current_state):
     value = minimax(current_state, 0, 4, True, 2, 2, -1000000, 1000000)
     chosen_action = None
     same_distances = []
+    print(current_state.actions)
     for y in range(0, 6):
         for x in range(0, 6):
             if current_state.actions[x][y] is None:
@@ -102,7 +104,7 @@ def main():
     player1_wins = 0
     player2_wins = 0
     num_draws = 0
-    for game in range(0, 25):
+    for game in range(0, 20):
         game_start = time.time()
         game_over = False
         game_output = open("output/game" + str(game+1) + ".txt", "w")

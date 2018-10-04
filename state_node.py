@@ -4,7 +4,7 @@ import random
 
 
 class StateNode:
-    def __init__(self, previous=None, move=None, player_turn=1):
+    def __init__(self, previous=None, move=None, player_turn=2):
         if previous is None:
             self.board = [[0] * 6, [0] * 6, [0] * 6, [0] * 6, [0] * 6, [0] * 6]
         else:
@@ -19,6 +19,7 @@ class StateNode:
         self.h2 = None
         self.middleDistance = None
         
+    # Calculate the total heuristic value for the requested player
     def calc_h(self, player):
         if player == 1 and self.h1 is not None:
             return self.h1
@@ -40,6 +41,7 @@ class StateNode:
         else:
             return self.h2
 
+    # Get all possible moves from the current state
     def get_valid_moves(self, player):
         moves = []
         for y in range(0,6):
@@ -49,13 +51,15 @@ class StateNode:
                     moves.append(new_state)
         return moves
 
+    # Calculate how far the given move is from the middle (used for tiebreaker)
     def calc_middle_distance(self):
         if self.middleDistance is not None:
             return self.middleDistance
         self.middleDistance = math.sqrt((2.5 - self.move[0])**2 + (2.5 - self.move[1])**2)
         return self.middleDistance
             
-
+    # Seach board to find sets; used to compute total heuristic
+    #  Calculates count : [number of open two-sided 3-in-a-rows, number of open one-sided 3-in-a-rows, number of open 2-in-a-rows]
     def find_player_sets(self, player):
         count = [0, 0, 0]
         counted_sets = []
